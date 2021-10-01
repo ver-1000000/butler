@@ -17,7 +17,7 @@ export class NotifyVoiceChannelService {
    * `DISCORD_NOTIFY_CHANNEL_ID`の通知用チャンネルに通知する。
    */
   private onVoiceStateUpdate(oldState: VoiceState, newState: VoiceState) {
-    if (oldState.channelID == null && newState.channelID && newState.member && newState.channel && newState.channel.members.size === 1) {
+    if (oldState.channelId == null && newState.channelId && newState.member && newState.channel?.members.size === 1) {
       const notifyChannel = this.client.channels.cache.get(NOTIFY_TEXT_CHANNEL_ID || '') as TextChannel | undefined;
       const text          = `:loudspeaker: **${newState.member}** が **${newState.channel.name}** でボイスチャンネルを開始しました`;
       notifyChannel?.send(text);

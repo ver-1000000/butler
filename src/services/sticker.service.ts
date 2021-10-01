@@ -20,7 +20,7 @@ export class StickerService {
 
   /** Clientからのイベント監視を開始する。 */
   run() {
-    this.client.on('message', message => this.onMessage(message));
+    this.client.on('messageCreate', message => this.onMessage(message));
     return this;
   }
 

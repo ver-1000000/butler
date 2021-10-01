@@ -7,7 +7,7 @@ export class InteractiveService {
 
   /** Clientからのイベント監視を開始する。 */
   run() {
-    this.client.on('message', message => this.onMessage(message));
+    this.client.on('messageCreate', message => this.onMessage(message));
   }
 
   /** Messageから各処理を呼び出すFacade関数。 */

@@ -1,5 +1,5 @@
 import { createServer, IncomingMessage, ServerResponse } from 'http';
-import { Client, ClientUser, TextChannel } from 'discord.js';
+import { Client, ClientUser, Intents, TextChannel } from 'discord.js';
 
 import { DISCORD_TOKEN, NOTIFY_TEXT_CHANNEL_ID } from 'src/environment';
 import { MemosStore } from 'src/stores/memos.store';
@@ -51,7 +51,7 @@ class App {
   /** readyイベントにフックして、ボットのステータスなどを設定する。 */
   private initializeBotStatus(user: ClientUser | null) {
     console.log('ready...');
-    user?.setPresence({ activity: { name: 'みんなの発言', type: 'WATCHING' } });
+    user?.setPresence({ activities: [{ name: 'みんなの発言', type: 'WATCHING' }] });
   }
 
   /** Discord.jsからエラーイベントを受け取った時、Discordに通知する。 */
@@ -68,8 +68,14 @@ class App {
 
 /** 依存を解決しつつアプリケーションを起動する。 */
 (() => {
-  const client      = new Client();
-  const memosStore   = new MemosStore();
+  const intents = [
+    Intents.FLAGS.GUILDS,
+    Intents.FLAGS.GUILD_MESSAGES,
+    Intents.FLAGS.GUILD_VOICE_STATES,
+    Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+  ];
+  const client      = new Client({ intents });
+  const memosStore  = new MemosStore();
   const entityStore = new StickersStore();
   new NotifyVoiceChannelService(client).run();
   new MemoService(client, memosStore).run();

@@ -24,7 +24,7 @@ export class MemoService {
 
   /** Clientからのイベント監視を開始する。 */
   run() {
-    this.client.on('message', message => this.onMessage(message));
+    this.client.on('messageCreate', message => this.onMessage(message));
     return this;
   }
 
@@ -65,7 +65,11 @@ export class MemoService {
   /** memoの値を一覧する。 */
   private async list({ channel }: Message) {
     const pretty = (await this.memosStore.data()).pretty;
-    if (pretty) { channel.send(pretty); }
+    if (pretty.length < 2000) {
+      channel.send(pretty);
+    } else {
+      channel.send({ content: '**MEMO 一覧**', files: [{ name: 'MEMO.md', attachment: Buffer.from(pretty) }] });
+    }
   }
 
   /** ヘルプを表示する。 */

@@ -1,7 +1,7 @@
 /** いい感じに整形された文を作成するヘルパー関数。 */
 export class PrettyText {
   /** Discordのコード記法(バッククォート3つで囲み、ファイルタイプを指定する記述)を作成しやすくする関数。 */
-  static code = (value: string, type = 'md') => `\`\`\`${type}\n${value}\`\`\``;
+  static code = (value: string, type = 'md') => `\`\`\`${type}\n${value.trim()}\n\`\`\``;
   /**
    * 整形されたヘルプのリストを作成する。
    * @param desc        リストの概要/タイトル

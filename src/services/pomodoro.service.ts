@@ -1,4 +1,5 @@
-import { MessageReaction, Client, Message, StreamDispatcher, User, VoiceChannel, VoiceState, TextChannel } from 'discord.js';
+import { MessageReaction, Client, Message, User, VoiceChannel, VoiceState, TextChannel } from 'discord.js';
+import { AudioPlayerStatus, createAudioPlayer, createAudioResource, joinVoiceChannel } from '@discordjs/voice';
 import { schedule } from 'node-cron';
 
 import { PrettyText } from 'src/lib/pretty-text';
@@ -29,6 +30,7 @@ const HELP = {
 /** ポモドーロタイマー機能を提供するアプリケーションクラス。 */
 export class PomodoroService {
   status = new PomodoroStatus();
+  player = createAudioPlayer();
 
   /** ポモドーロ用音声チャンネルの取得。 */
   private get voiceChannel() {
@@ -44,7 +46,7 @@ export class PomodoroService {
       this.restart();
     });
     this.client.on('voiceStateUpdate', (oldState, newState) => this.onVoiceStateUpdate(oldState, newState));
-    this.client.on('message', message => this.onMessage(message));
+    this.client.on('messageCreate', message => this.onMessage(message));
     return this;
   }
 
@@ -66,8 +68,8 @@ export class PomodoroService {
   private onVoiceStateUpdate(oldState: VoiceState, newState: VoiceState) {
     if (newState.member?.user.bot) { return; }
     const changeChannel       = oldState.channel !== newState.channel;
-    const fromPomodoroChannel = oldState.channelID === POMODORO_VOICE_CHANNEL_ID;
-    const toPomodoroChannel   = newState.channelID === POMODORO_VOICE_CHANNEL_ID;
+    const fromPomodoroChannel = oldState.channelId === POMODORO_VOICE_CHANNEL_ID;
+    const toPomodoroChannel   = newState.channelId === POMODORO_VOICE_CHANNEL_ID;
     if (changeChannel && toPomodoroChannel) { newState.setMute(!this.status.rest); }
     if (changeChannel && fromPomodoroChannel && newState.channel) { newState.setMute(false); }
   }
@@ -87,7 +89,7 @@ export class PomodoroService {
     this.status.task  = schedule('* * * * *', () => this.onSchedule());
     this.doWork();
     channel.send(`ポモドーロを開始します:timer: **:loudspeaker:${this.voiceChannel?.name}** に参加して、作業を始めてください:fire:`);
-    this.client.user?.setPresence({ activity: { name: '🍅ポモドーロ', type: 'PLAYING' } });
+    this.client.user?.setPresence({ activities: [{ name: 'ポモドーロ', type: 'PLAYING' }] });
   }
 
   /** PomodoroService起動時に`this.status.startAt`が設定されている時、中断からの復帰を行う。 */
@@ -100,7 +102,7 @@ export class PomodoroService {
       `:warning: なにか問題があり停止してしまったため、ポモドーロを再開しました。\n` +
         `現在、_** ${this.status.wave} 回目 ${this.status.spent} 分経過、${this.status.rest ? '休憩' : '作業'}中**_です。`
     );
-    this.client.user?.setPresence({ activity: { name: '🍅ポモドーロ', type: 'PLAYING' } });
+    this.client.user?.setPresence({ activities: [{ name: '🍅ポモドーロ', type: 'PLAYING' }] });
   }
 
   /** ポモドーロタイマーを終了/停止させて発言通知する。 */
@@ -108,7 +110,7 @@ export class PomodoroService {
     this.status.reset();
     await this.setMute(false);
     channel.send('ポモドーロを終了します:timer: お疲れ様でした:island:');
-    this.client.user?.setPresence({ activity: { name: 'みんなの発言', type: 'WATCHING' } });
+    this.client.user?.setPresence({ activities: [{ name: 'みんなの発言', type: 'WATCHING' }] });
   }
 
   /** ステータスをユーザーフレンドリーな文字列として整形した値をメッセージとして発言通知する。 */
@@ -139,7 +141,7 @@ export class PomodoroService {
       PrettyText.code('1️⃣ !pomodoro.start! / 2️⃣ !pomodoro.stop / 3️⃣ !pomodoro.status');
     await message.edit(message.content + additional);
     const filter   = (reaction: MessageReaction, _: User) => Object.values(EMOJIS).includes(reaction.emoji?.name || '');
-    const reaction = (await message.awaitReactions(filter, { max: 1, time }))?.first();
+    const reaction = (await message.awaitReactions({ filter, max: 1, time }))?.first();
     await message.reactions.removeAll();
     await message.edit(message.content.replace(additional, ''));
     if (reaction?.emoji?.name) { await message.channel.send(`---\n${reaction.emoji.name}を選択しました。\n---`) }
@@ -167,11 +169,15 @@ export class PomodoroService {
 
   /** `input`のパスにある音声ファイルを再生する。 */
   private async playSound(input: string) {
-    const connection   = this.voiceChannel?.join();
-    const dispatcher   = (await connection)?.play(input);
-    const promise      = new Promise<StreamDispatcher>((resolve, reject) => {
-      return dispatcher?.on('finish', () => resolve(dispatcher)).on('error', e => reject(e));
-    }).then(async result => {
+    if (this.voiceChannel == null) { return; }
+    const connection   = joinVoiceChannel({
+      channelId: this.voiceChannel.id,
+      guildId: this.voiceChannel.guildId,
+      adapterCreator: this.voiceChannel.guild.voiceAdapterCreator
+    });
+    this.player.play(createAudioResource(input));
+    connection.subscribe(this.player);
+    const promise = new Promise(resolve => this.player.on(AudioPlayerStatus.Idle, () => resolve(null))).then(async result => {
       if (DEBUG) { this.sendPrettyStatus({ channel: await this.client.channels.fetch(NOTIFY_TEXT_CHANNEL_ID || '') } as Message); }
       return result;
     });
