@@ -10,6 +10,7 @@ const HELP = {
   ITEMS: [
     ['!sticker.set http://example.com/hoge.jpg /abc/', '`http://example.com/hoge.jpg` に正規表現 `/abc/` を設定(新規追加/上書き)します'],
     ['!sticker.remove http://example.com/hoge.jpg', '`http://example.com/hoge.jpg` が設定されていれば削除します'],
+    ['!sticker.list', '登録されている値を一覧します'],
     ['!sticker.help', '`!sticker` コマンドのヘルプを表示します(エイリアス: `!sticker`)']
   ]
 } as const;
@@ -31,6 +32,7 @@ export class StickerService {
     if (message.author.bot) { return; } // botの発言は無視
     if (content.startsWith('!sticker.set')) { this.set(message, { body }); };
     if (content.startsWith('!sticker.remove')) { this.remove(message, { body }); };
+    if (content.startsWith('!sticker.list')) { this.list(message); };
     if (content.startsWith('!sticker.help') || content === '!sticker') { this.help(message); };
     if (!content.startsWith('!')) { this.sendSticker(message); }
   }
@@ -45,6 +47,17 @@ export class StickerService {
   /** `!sticker.remove` コマンドを受け取った時、第一引数にマッチする値を削除する。 */
   private async remove({ channel }: Message, { body: url }: { body: string }) {
     channel.send((await this.stickersStore.del(url)).pretty);
+  }
+
+  /** `!sticker.list` コマンドを受け取った時、値を一覧する。 */
+  private async list({ channel }: Message) {
+    const data = await this.stickersStore.data();
+    if (data.pretty.length < 2000) {
+      channel.send(data.pretty);
+    } else {
+      const pretty = `[${Object.values(data.value).map(({ id, regexp }) => `\n  ["${id}", "${regexp}"]`).join(',')}\n]`;
+      channel.send({ content: '**STICKER 一覧**', files: [{ name: 'STICKERS.md', attachment: Buffer.from(pretty) }] });
+    }
   }
 
   /** ヘルプを表示する。 */
