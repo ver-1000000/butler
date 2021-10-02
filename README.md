@@ -22,6 +22,7 @@ TypeScript実装のDiscord Botです。
 ### 前提
 - 対象のDiscordサーバーにBOTがログインしている状態にしておくこと
 - `node.js`のいい感じの環境を整えておくこと
+- データ永続化に利用するため、Redisサーバーにアクセスできること
 
 ### 手順
 1. 本リポジトリをクローンし、`npm ci`を実行する
@@ -33,13 +34,14 @@ TypeScript実装のDiscord Botです。
 ### 前提
 - DiscordサーバーにBOTがログインしている状態にしておくこと
 - Glitchにログインしておくこと
+- Redisをインストール(もしくはほかサーバーで準備)してREDIS_URIを設定しておくこと
 - nodeのバージョンについて https://glitch.happyfox.com/kb/article/59-can-i-change-the-version-of-node-js-my-project-uses/ を確認すること
 
 ### 手順
 1. https://glitch.com/ のヘッダーにある `New Project` から `Import from GitHub` を選択して `https://github.com/ver-1000000/butler` を入力する
 2. Glitchのエディター画面に飛ばされ、しばらくするとファイルが編集できるようになるので、`.env`というファイルを編集して環境変数を設定する
 3. `package.json` を選択して **一番下の行に改行を一つ追加** する
-  - Glitchは`package.json`に変更があると`npm i`が走るらしい
+   - Glitchは`package.json`に変更があると`npm i`が走るらしい
 4. 問題がなければBOTが動作し始める
 
 ### 注意
@@ -65,10 +67,13 @@ const sendGlitch = (uri, json) => {
 ## Herokuへのデプロイ
 コードをクローンしていい感じにHerokuにあげると、あとはpushするたびにビルドが走ってBOTが動作し始めます。
 
+Heroku Redisなどを利用して、REDIS_URIを設定するのも忘れないようにしてください。
+
 ## 環境変数(.envファイル)の説明
 - `DISCORD_TOKEN`: Discord APIを利用するために必要なトークン
 - `NOTIFY_TEXT_CHANNEL_ID`: 通知など、BOTが自発的に発言する際のテキストチャンネルID
 - `POMODORO_VOICE_CHANNEL_ID`: ポモドーロ機能で利用するボイスチャンネルのID
+- `REDIS_URI`: 利用するRedisサーバーのURI
 - `DETECT_STICKER_RATE`: チャットがstickerの正規表現にマッチした際の反応率を、0.0-1.0で記述(0は無効化、1.0のときは必ず反応)
 
 ## その他

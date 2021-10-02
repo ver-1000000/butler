@@ -1,5 +1,6 @@
-import level from 'level';
+import Redis from 'ioredis';
 
+import { REDIS_URL } from 'src/environment';
 import { PrettyText } from 'src/lib/pretty-text';
 
 /** `MemoStore`にアクセスした結果を使いやすくするためにラップする型。 */
@@ -12,36 +13,32 @@ interface StoreResult<T = string | Record<string, string>> {
   value: T;
 }
 
+/** Redisで利用するトップキー。 */
+const HKEY = 'MEMO';
+
 /** memoの情報をjsonに永続化して保存するためのストア用クラス。 */
 export class MemosStore {
-  private store: level.LevelDB<string, string> = level('.data/memo');
+  private redis = new Redis(REDIS_URL);
 
   constructor() {}
 
   /** 設定されている値をすべて取得する。 */
   async data(): Promise<Omit<StoreResult<Record<string, string>>, 'key'>> {
-    const read = () => new Promise<Record<string, string>>(resolve => {
-      const stream                         = this.store.createReadStream();
-      const buffer: Record<string, string> = {};
-      stream.on('data', chunk => buffer[chunk.key] = chunk.value);
-      stream.on('end', () => resolve(buffer));
-    });
-    const value  = await read();
-    const pretty = PrettyText.markdownList('', ...Object.entries(value)) || 'メモは一つもありません:snail:';
+    const value  = await this.redis.hgetall(HKEY);
+    const pretty = PrettyText.markdownList('', ...Object.entries(value)) || 'Memoは一つもありません:snail:';
     return { pretty, value };
   }
 
   /** データストアから値を取得する。 */
   async get(key: string): Promise<StoreResult<string | null>> {
-    const result = this.store.get(key).catch(reason => (reason.name === 'NotFoundError' ? null : (() => { throw reason; })()));
-    const value  = await result;
+    const value  = await this.redis.hget(HKEY, key);
     const pretty = value == null ? `**${key}** は設定されていません:cry:` : `**${key}**\n${value ? PrettyText.code(value) : '値は空です:ghost:'}`;
     return { pretty, key, value };
   }
 
   /** データストアに値を設定する。 */
   async set(key: string, value: string): Promise<StoreResult<string>> {
-    await this.store.put(key, value);
+    await this.redis.hset(HKEY, key, value);
     const pretty = `**${key}** ${value ? `に次の内容をメモしました:wink:\n${PrettyText.code(value)}` : 'とメモしました:cat:'}`
     return { pretty, key, value };
   }
@@ -50,7 +47,7 @@ export class MemosStore {
   async del(key: string): Promise<StoreResult<string | null>> {
     const value  = (await this.get(key)).value;
     const pretty = value == null ? `**${key}** は設定されていません:cry:` : `**${key}** を削除しました:wave:${value ? '\n' + PrettyText.code(value) : ''}`;
-    if (value != null) { await this.store.del(key); }
+    if (value != null) { await this.redis.hdel(HKEY, key); }
     return { pretty, key, value };
   }
 }

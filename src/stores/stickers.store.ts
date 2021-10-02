@@ -1,5 +1,5 @@
-import level from 'level';
-
+import Redis from 'ioredis';
+import { REDIS_URL } from 'src/environment';
 import { PrettyText } from 'src/lib/pretty-text';
 
 /** ストアにアクセスした結果を使いやすくするためにラップする型。 */
@@ -19,36 +19,33 @@ export interface Sticker {
   regexp: string;
 }
 
+/** Redisで利用するトップキー。 */
+const HKEY = 'STICKER';
+
 /** 画像と正規表現のレコードを表すクラス。 */
 export class StickersStore {
-  private store: level.LevelDB<string, string> = level('.data/sticker');
+  private redis = new Redis(REDIS_URL);
 
   constructor() {}
 
   /** 設定されている値をすべて取得する。 */
   async data(): Promise<StoreResult<Record<string, Sticker>>> {
-    const read = () => new Promise<Record<string, Sticker>>(resolve => {
-      const stream                         = this.store.createReadStream();
-      const buffer: Record<string, Sticker> = {};
-      stream.on('data', chunk => buffer[chunk.key] = JSON.parse(chunk.value));
-      stream.on('end', () => resolve(buffer));
-    });
-    const value  = await read();
-    const pretty = PrettyText.markdownList('', ...Object.entries(value).map<[string, string]>(([k, v]) => [k, v.regexp]));
+    const value  = Object.entries(await this.redis.hgetall(HKEY)).reduce<Record<string, Sticker>>((a, [k, v]) => ({ ...a, [k]: JSON.parse(v) }), {});
+    const items  = Object.entries(value).map<[string, string]>(([k, v]) => [k, v.regexp]);
+    const pretty = PrettyText.markdownList('', ...items) || 'Stickerは一つもありません:drum:';
     return { pretty, value };
   }
 
   /** データストアから値を取得する。 */
   async get(key: string): Promise<StoreResult<Sticker | null>> {
-    const result = this.store.get(key).catch(reason => (reason.name === 'NotFoundError' ? 'null' : (() => { throw reason; })()));
-    const value  = JSON.parse(await result) as Sticker | null;
-    const pretty = value == null ? `**${key}** は設定されていません:cry:` : ` **\`${key}\`** \`/${value.regexp}/\``;
+    const value: Sticker | null = JSON.parse((await this.redis.hget(HKEY, key)) ?? 'null');
+    const pretty                = value == null ? `**${key}** は設定されていません:cry:` : ` **\`${key}\`** \`/${value.regexp}/\``;
     return { pretty, key, value };
   }
 
   /** データストアに値を設定する。 */
   async set(key: string, value: string): Promise<StoreResult<string>> {
-    await this.store.put(key, JSON.stringify({ id: key, regexp: value }));
+    await this.redis.hset(HKEY, key, JSON.stringify({ id: key, regexp: value }));
     const pretty = `**\`${key}\`** に **\`/${value}/\`** を設定しました:pleading_face:`;
     return { pretty, key, value };
   }
@@ -56,10 +53,8 @@ export class StickersStore {
   /** データストアから値を削除する。 */
   async del(key: string): Promise<StoreResult<Sticker | null>> {
     const value  = (await this.get(key)).value;
-    const pretty = value == null ? `**${key}** は設定されていません:cry:` : `**${key}** を削除しました:wave:${
-      value ? '\n' + PrettyText.code(value.regexp) : ''
-    }`;
-    if (value != null ) { await this.store.del(key); }
+    const pretty = value == null ? `**${key}** は設定されていません:cry:` : `**${key}** を削除しました:wave:${value ? '\n' + PrettyText.code(value.regexp) : ''}`;
+    if (value != null) { await this.redis.hdel(HKEY, key); }
     return { pretty, key, value };
   }
 }

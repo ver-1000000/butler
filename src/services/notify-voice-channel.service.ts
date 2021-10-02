@@ -19,7 +19,8 @@ export class NotifyVoiceChannelService {
   private onVoiceStateUpdate(oldState: VoiceState, newState: VoiceState) {
     if (oldState.channelId == null && newState.channelId && newState.member && newState.channel?.members.size === 1) {
       const notifyChannel = this.client.channels.cache.get(NOTIFY_TEXT_CHANNEL_ID || '') as TextChannel | undefined;
-      const text          = `:loudspeaker: **${newState.member}** が **${newState.channel.name}** でボイスチャンネルを開始しました`;
+      const name          = newState.member.nickname || newState.member.displayName;
+      const text          = `:loudspeaker: **${name}** が **${newState.channel.name}** でボイスチャンネルを開始しました`;
       notifyChannel?.send(text);
     }
   }

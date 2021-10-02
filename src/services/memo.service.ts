@@ -40,26 +40,26 @@ export class MemoService {
   }
 
   /** keyにマッチする値を取得する。 */
-  private async get({ author, channel, content }: Message) {
+  private async get({ channel, content }: Message) {
     const key = trimCommandsForConent(content);
-    channel.send(`${author} ${(await this.memosStore.get(key)).pretty}`);
+    channel.send((await this.memosStore.get(key)).pretty);
   }
 
   /**
    * bodyの最初の空白(もしくは改行)で前半部と後半部を分け、
    * 前半部をキーに、後半部を値にしたものをmemoとして登録する。
    */
-  private async set({ author, channel, content }: Message) {
+  private async set({ channel, content }: Message) {
     const body  = trimCommandsForConent(content);
     const key   = body.replace(/\s.*/g, '');
     const value = body.replace(key, '').trim();
-    channel.send(`${author} ${(await this.memosStore.set(key, value)).pretty}`);
+    channel.send((await this.memosStore.set(key, value)).pretty);
   }
 
   /** bodyにマッチする値を削除する。 */
-  private async remove({ author, channel, content }: Message) {
+  private async remove({ channel, content }: Message) {
     const body  = trimCommandsForConent(content);
-    channel.send(`${author} ${(await this.memosStore.del(body)).pretty}`);
+    channel.send((await this.memosStore.del(body)).pretty);
   }
 
   /** memoの値を一覧する。 */
