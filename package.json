@@ -1,12 +1,14 @@
 {
   "name": "butler",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Some features Discord BOT",
   "main": "dist/src/index.js",
   "scripts": {
-    "start": "npm run build && npm run serve",
+    "start": "npm run redis-start && npm run build && npm run serve",
+    "redis-start": "/app/bin/redis-server /app/redis.conf",
     "build": "npx tsc",
-    "serve": "NODE_PATH=dist node dist/src --trace-warnings"
+    "serve": "NODE_PATH=dist node dist/src --trace-warnings",
+    "dev": "npm run build && npm run serve"
   },
   "repository": {
     "type": "git",
