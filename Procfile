@@ -1,1 +1,1 @@
-worker: NODE_PATH=dist node ./dist/src/index.js
+worker: npm start --prefix packages/worker

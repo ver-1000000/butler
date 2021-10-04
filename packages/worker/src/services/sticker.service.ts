@@ -1,8 +1,8 @@
 import { Client, Message } from 'discord.js';
 
-import { DETECT_STICKER_RATE } from 'src/environment';
-import { PrettyText } from 'src/lib/pretty-text';
-import { StickersStore } from 'src/stores/stickers.store';
+import { DETECT_STICKER_RATE } from '../../../core';
+import { PrettyText } from '../lib/pretty-text';
+import { StickersStore } from '../stores/stickers.store';
 
 /** `GenerateText.help`に食わせるヘルプ文の定数。 */
 const HELP = {

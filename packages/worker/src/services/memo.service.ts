@@ -1,7 +1,7 @@
 import { Client, Message } from 'discord.js';
 
-import { PrettyText } from 'src/lib/pretty-text';
-import { MemosStore } from 'src/stores/memos.store';
+import { PrettyText } from '../lib/pretty-text';
+import { MemosStore } from '../stores/memos.store';
 
 /** メッセージ(`content`)からコマンドに該当する文字列を除外する。 */
 const trimCommandsForConent = (content: string) => content.replace(/!memo\.?\w*\s*\n*/, '').trim();

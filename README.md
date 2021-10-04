@@ -18,6 +18,30 @@ TypeScript実装のDiscord Botです。
 
 それぞれのコマンドの詳細については、実装をご覧いただくか、本Bot起動後、コマンドに引数を付けずに実行することで詳細なヘルプが表示されます。
 
+## ファイル・ディレクトリ構成
+本プロジェクトは [npmのWorkspaces](https://docs.npmjs.com/cli/v7/using-npm/workspaces)を利用したモノリポ構成となっております。
+
+```
+.
+├── Procfile              # Herokuの起動スクリプトの情報を書くファイル
+├── package.json
+├── packages/
+│   ├── core/             # 共通で利用するライブラリなど
+│   │   ├── src/
+│   │   ├── package.json
+│   │   └── tsconfig.json
+│   ├── worker/           # Discordのイベントを常時監視するワーカー
+│   │   ├── src/
+│   │   ├── package.json
+│   │   └── tsconfig.json
+│   └── tsconfig.json
+├── redis.conf            # GlitchでRedisサーバーを立ち上げるときの設定
+├── setup-redis.sh        # GlitchでRedisサーバーをインストールするスクリプト
+├── tsconfig.base.json    # モノリポで継承されるベースのtsconfig.json
+├── tsconfig.json
+└── ... # 省略
+```
+
 ## ローカルでの環境構築
 ### 前提
 - 対象のDiscordサーバーにBOTがログインしている状態にしておくこと

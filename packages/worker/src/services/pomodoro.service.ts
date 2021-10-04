@@ -2,9 +2,9 @@ import { MessageReaction, Client, Message, User, VoiceChannel, VoiceState, TextC
 import { AudioPlayerStatus, createAudioPlayer, createAudioResource, joinVoiceChannel } from '@discordjs/voice';
 import { schedule } from 'node-cron';
 
-import { PrettyText } from 'src/lib/pretty-text';
-import { NOTIFY_TEXT_CHANNEL_ID, POMODORO_VOICE_CHANNEL_ID } from 'src/environment';
-import { PomodoroStatus } from 'src/models/pomodoro-status.model';
+import { NOTIFY_TEXT_CHANNEL_ID, POMODORO_VOICE_CHANNEL_ID } from '../../../core';
+import { PrettyText } from '../lib/pretty-text';
+import { PomodoroStatus } from '../models/pomodoro-status.model';
 
 /** デバッグモードフラグ。 */
 const DEBUG = false;

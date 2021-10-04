@@ -1,40 +1,37 @@
 {
-  "name": "butler",
-  "version": "1.1.3",
+  "name": "@butler/monorepo",
+  "version": "1.0.0",
   "description": "Some features Discord BOT",
-  "main": "dist/src/index.js",
+  "main": "packages/worker/dist/src/index.js",
+  "types": "packages/worker/dist/src/index.d.js",
+  "private": true,
+  "workspaces": [
+    "packages/**"
+  ],
   "scripts": {
-    "start": "npm run redis-start && npm run build && npm run serve",
-    "redis-start": "/app/bin/redis-server /app/redis.conf",
-    "build": "npx tsc",
-    "serve": "NODE_PATH=dist node dist/src",
-    "dev": "npx ts-node-dev -r tsconfig-paths/register src/index.ts"
+    "start": "npm run redis-start && npm start --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "dev": "npm run dev --workspaces --if-present",
+    "clean": "rimraf .build-cache && npm run clean --workspaces --if-present",
+    "redis-start": "/app/bin/redis-server /app/redis.conf"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/ver-1000000/butler.git"
   },
+  "dependencies": {
+    "typescript": "^4.4.3"
+  },
   "author": "akai <@Ver1000000000>",
   "license": "MIT",
-  "dependencies": {
-    "@discordjs/opus": "^0.6.0",
-    "@discordjs/voice": "^0.6.0",
-    "discord.js": "^13.1.0",
-    "dotenv": "*",
-    "ffmpeg-static": "^4.4.0",
-    "ioredis": "^4.27.9",
-    "node-cron": "^2.0.3",
-    "node-fetch": "^2.6.5",
-    "sodium": "^3.0.2"
-  },
   "devDependencies": {
     "@types/ioredis": "^4.27.5",
     "@types/node": "^16.10.2",
     "@types/node-cron": "^2.0.4",
     "@types/node-fetch": "^2.5.12",
+    "rimraf": "^3.0.2",
     "ts-node-dev": "^1.1.8",
-    "tsconfig-paths": "^3.11.0",
-    "typescript": "^4.4.3"
+    "tsconfig-paths": "^3.11.0"
   },
   "engines": {
     "node": "16.x"
@@ -43,7 +40,6 @@
     "node",
     "typescript",
     "discord.js",
-    "dotenv",
     "glitch",
     "heroku"
   ]

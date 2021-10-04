@@ -19,7 +19,7 @@ export class InteractiveService {
 
   /** リプライを受け取ったメンバーに対して、README.mdの内容をパースした概要を通知発言する。 */
   async reply({ author, channel }: Message) {
-    const md          = await fs.readFile('README.md', 'utf-8');
+    const md          = await fs.readFile('../../README.md', 'utf-8');
     const section     = (token: string) => md.match(new RegExp(`${token}[\\s\\S]*?(#|$)`))?.[0].replace(/#$/, '').trim();
     const description = section('# ');
     const feature     = section('## 機能');

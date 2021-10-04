@@ -1,4 +1,5 @@
-require('dotenv').config();
+import { config } from 'dotenv';
+config({ path: '../../.env' });
 
 /** `.env`ファイルから定数を読み取ってオブジェクトとして提供する環境変数。 */
 export const {

@@ -1,16 +1,16 @@
 import { createServer, IncomingMessage, ServerResponse } from 'http';
 import { Client, ClientUser, Intents, TextChannel } from 'discord.js';
 
-import { DISCORD_TOKEN, NOTIFY_TEXT_CHANNEL_ID } from 'src/environment';
-import { MemosStore } from 'src/stores/memos.store';
-import { StickersStore } from 'src/stores/stickers.store';
+import { DISCORD_TOKEN, NOTIFY_TEXT_CHANNEL_ID } from '../../core';
+import { MemosStore } from './stores/memos.store';
+import { StickersStore } from './stores/stickers.store';
 
-import { NotifyVoiceChannelService } from 'src/services/notify-voice-channel.service';
-import { MemoService } from 'src/services/memo.service';
-import { PomodoroService } from 'src/services/pomodoro.service';
-import { InteractiveService } from 'src/services/interactive.service';
-import { WikipediaService } from 'src/services/wikipedia.service';
-import { StickerService } from 'src/services/sticker.service';
+import { NotifyVoiceChannelService } from './services/notify-voice-channel.service';
+import { MemoService } from './services/memo.service';
+import { PomodoroService } from './services/pomodoro.service';
+import { InteractiveService } from './services/interactive.service';
+import { WikipediaService } from './services/wikipedia.service';
+import { StickerService } from './services/sticker.service';
 
 /** 起点となるメインのアプリケーションクラス。 */
 class App {

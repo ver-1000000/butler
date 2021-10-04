@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 
 import { Client, Message } from 'discord.js';
-import { PrettyText } from 'src/lib/pretty-text';
+import { PrettyText } from '../lib/pretty-text';
 
 
 /** メッセージ(`content`)からコマンドに該当する文字列を除外する。 */

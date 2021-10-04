@@ -1,6 +1,6 @@
 import { Client, TextChannel, VoiceState } from 'discord.js';
 
-import { NOTIFY_TEXT_CHANNEL_ID } from 'src/environment';
+import { NOTIFY_TEXT_CHANNEL_ID } from '../../../core';
 
 /** 音声チャンネルへの通知を目的とした機能を提供するサービスクラス。 */
 export class NotifyVoiceChannelService {

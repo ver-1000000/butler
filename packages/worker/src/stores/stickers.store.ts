@@ -1,6 +1,6 @@
 import Redis from 'ioredis';
-import { REDIS_URL } from 'src/environment';
-import { PrettyText } from 'src/lib/pretty-text';
+import { REDIS_URL } from '../../../core';
+import { PrettyText } from '../lib/pretty-text';
 
 /** ストアにアクセスした結果を使いやすくするためにラップする型。 */
 interface StoreResult<T = string | Record<string, string>> {

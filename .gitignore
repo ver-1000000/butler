@@ -1,6 +1,8 @@
 bin/
 dist/
 node_modules/
+.build-cache/
 .data/*
 !.data/.keep
 .env
+*.tsbuildinfo
