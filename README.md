@@ -65,10 +65,8 @@ TypeScript実装のDiscord Botです。
 2. Glitchのエディター画面に飛ばされ、しばらくするとエディター画面が表示され操作が可能になる
 3. ファイルが編集できるようになるので、`.env`というファイルを編集して環境変数を設定する
 4. `Tools` > `Terminal` からターミナルに入り、プロジェクトを動かすためのコマンドを入力する
-   - `enable-npm`を実行して、Node 16のnpmを有効化する
-     - https://glitch.happyfox.com/kb/article/59-can-i-change-the-version-of-node-js-my-project-uses/ を確認すること
-   - `./setup-redis.sh` を実行してRedisサーバーをインストール(5-10分かかる)する
-5. 問題がなければ、Glitchのコンテナが再起動し、BOTが動作し始める
+   - `./setup-redis.sh` を実行してRedisサーバーをインストール(10-20分かかる)する
+5. 問題がなければ、更に10-20分経ることでGlitchのコンテナが再起動し、BOTが動作し始める
 
 ### 注意
 無料プランのGlitch Projectは **5分間放置するとCold状態** になります。
@@ -78,15 +76,14 @@ TypeScript実装のDiscord Botです。
 `トリガー`メニューから**5分おきに`wakeGlitch`を実行する分ベースのタイマー**を作成します。
 
 ```gs
-const GLITCH_URL = 'https://your-glitch-url.glitch.me';
-const wakeGlitch = () => sendGlitch(GLITCH_URL, { type: 'wake' });
-const sendGlitch = (uri, json) => {
+const GLITCH_URL = 'https://your-glitch-url.glitch.me'; // <- GlitchプロジェクトのエンドポイントURL(`Change URL`から見れる)に書き換える
+const wakeGlitch = () => {
   const contentType        = 'application/json; charset=utf-8';
   const method             = 'post';
-  const payload            = json;
   const muteHttpExceptions = true;
-  const params             = { contentType, method, payload, muteHttpExceptions };
-  UrlFetchApp.fetch(uri, params);
+  const payload            = { type: 'wake' };
+  const params             = { contentType, method, muteHttpExceptions, payload };
+  UrlFetchApp.fetch(GLITCH_URL, params);
 };
 ```
 
