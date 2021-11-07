@@ -7,7 +7,8 @@
     "packages/*"
   ],
   "scripts": {
-    "start": "npm run redis-start && npm start --workspaces --if-present",
+    "start": "npm run start:glitch",
+    "start:glitch": "npm run redis-start && npm run build && npm start --workspaces --if-present",
     "build": "tsc -b . -v",
     "dev": "npm run dev --workspaces --if-present",
     "clean": "npm run clean --workspaces --if-present",
