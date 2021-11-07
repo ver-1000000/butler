@@ -1,5 +1,5 @@
 import { MessageReaction, Client, Message, User, VoiceChannel, VoiceState, TextChannel } from 'discord.js';
-import { AudioPlayerStatus, createAudioPlayer, createAudioResource, joinVoiceChannel } from '@discordjs/voice';
+import { AudioPlayerStatus, createAudioPlayer, createAudioResource, DiscordGatewayAdapterCreator, joinVoiceChannel } from '@discordjs/voice';
 import { schedule } from 'node-cron';
 
 import { NOTIFY_TEXT_CHANNEL_ID, POMODORO_VOICE_CHANNEL_ID } from '@butler/core';
@@ -173,7 +173,7 @@ export class PomodoroService {
     const connection   = joinVoiceChannel({
       channelId: this.voiceChannel.id,
       guildId: this.voiceChannel.guildId,
-      adapterCreator: this.voiceChannel.guild.voiceAdapterCreator
+      adapterCreator: this.voiceChannel.guild.voiceAdapterCreator as DiscordGatewayAdapterCreator
     });
     this.player.play(createAudioResource(input));
     connection.subscribe(this.player);
