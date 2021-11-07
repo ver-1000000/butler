@@ -1,9 +1,7 @@
 {
   "name": "@butler/monorepo",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Some features Discord BOT",
-  "main": "packages/worker/dist/src/index.js",
-  "types": "packages/worker/dist/src/index.d.js",
   "private": true,
   "workspaces": [
     "packages/*"

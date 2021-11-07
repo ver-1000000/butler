@@ -1,6 +1,6 @@
 {
   "name": "@butler/worker",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "license": "MIT",
   "private": true,
   "main": "src/index.js",
@@ -15,7 +15,7 @@
     "clean": "rimraf dist *.tsbuildinfo"
   },
   "dependencies": {
-    "@butler/core": "1.0.0",
+    "@butler/core": "*",
     "@discordjs/opus": "^0.6.0",
     "@discordjs/voice": "^0.6.0",
     "discord.js": "^13.1.0",
