@@ -9,7 +9,6 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc -b .",
     "clean": "rimraf dist *.tsbuildinfo"
   },
   "dependencies": {

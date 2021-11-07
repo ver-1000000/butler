@@ -6,21 +6,18 @@
   "types": "packages/worker/dist/src/index.d.js",
   "private": true,
   "workspaces": [
-    "packages/**"
+    "packages/*"
   ],
   "scripts": {
     "start": "npm run redis-start && npm start --workspaces --if-present",
-    "build": "npm run build --workspaces --if-present",
+    "build": "tsc -b . -v",
     "dev": "npm run dev --workspaces --if-present",
-    "clean": "rimraf .build-cache && npm run clean --workspaces --if-present",
+    "clean": "npm run clean --workspaces --if-present",
     "redis-start": "/app/bin/redis-server /app/redis.conf"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/ver-1000000/butler.git"
-  },
-  "dependencies": {
-    "typescript": "^4.4.3"
   },
   "author": "akai <@Ver1000000000>",
   "license": "MIT",
@@ -31,7 +28,8 @@
     "@types/node-fetch": "^2.5.12",
     "rimraf": "^3.0.2",
     "ts-node-dev": "^1.1.8",
-    "tsconfig-paths": "^3.11.0"
+    "tsconfig-paths": "^3.11.0",
+    "typescript": "^4.4.4"
   },
   "engines": {
     "node": "16.x"

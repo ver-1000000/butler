@@ -2,7 +2,7 @@ import { MessageReaction, Client, Message, User, VoiceChannel, VoiceState, TextC
 import { AudioPlayerStatus, createAudioPlayer, createAudioResource, joinVoiceChannel } from '@discordjs/voice';
 import { schedule } from 'node-cron';
 
-import { NOTIFY_TEXT_CHANNEL_ID, POMODORO_VOICE_CHANNEL_ID } from '../../../core';
+import { NOTIFY_TEXT_CHANNEL_ID, POMODORO_VOICE_CHANNEL_ID } from '@butler/core';
 import { PrettyText } from '../lib/pretty-text';
 import { PomodoroStatus } from '../models/pomodoro-status.model';
 

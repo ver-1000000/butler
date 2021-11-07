@@ -1,7 +1,7 @@
 import { createServer, IncomingMessage, ServerResponse } from 'http';
 import { Client, ClientUser, Intents, TextChannel } from 'discord.js';
 
-import { DISCORD_TOKEN, NOTIFY_TEXT_CHANNEL_ID } from '../../core';
+import { DISCORD_TOKEN, NOTIFY_TEXT_CHANNEL_ID } from '@butler/core';
 import { MemosStore } from './stores/memos.store';
 import { StickersStore } from './stores/stickers.store';
 

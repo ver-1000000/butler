@@ -3,14 +3,13 @@
   "version": "1.0.1",
   "license": "MIT",
   "private": true,
-  "main": "dist/index.js",
-  "types": "dist/index.d.js",
+  "main": "src/index.js",
+  "types": "src/index.d.js",
   "files": [
     "dist"
   ],
   "scripts": {
-    "start": "npm run build && npm run serve",
-    "build": "tsc -b .",
+    "start": "npm run serve",
     "serve": "NODE_PATH=dist node dist",
     "dev": "npx ts-node-dev -r tsconfig-paths/register src/index.ts",
     "clean": "rimraf dist *.tsbuildinfo"

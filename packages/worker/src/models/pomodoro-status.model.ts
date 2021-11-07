@@ -1,6 +1,6 @@
 import Redis from 'ioredis';
 import { ScheduledTask } from 'node-cron';
-import { REDIS_URL } from '../../../core';
+import { REDIS_URL } from '@butler/core';
 
 /** Redisで利用するトップキー。 */
 const HKEY = 'POMODORO';

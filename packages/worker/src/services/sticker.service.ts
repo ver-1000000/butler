@@ -1,6 +1,6 @@
 import { Client, Message } from 'discord.js';
 
-import { DETECT_STICKER_RATE } from '../../../core';
+import { DETECT_STICKER_RATE } from '@butler/core';
 import { PrettyText } from '../lib/pretty-text';
 import { StickersStore } from '../stores/stickers.store';
 

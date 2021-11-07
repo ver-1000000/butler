@@ -1,6 +1,6 @@
 import Redis from 'ioredis';
 
-import { REDIS_URL } from '../../../core';
+import { REDIS_URL } from '@butler/core';
 import { PrettyText } from '../lib/pretty-text';
 
 /** `MemoStore`にアクセスした結果を使いやすくするためにラップする型。 */

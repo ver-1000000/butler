@@ -1,3 +1,7 @@
 {
-  "extends": "./tsconfig.base.json"
+  "files": [],
+  "references": [
+    { "path": "packages/core" },
+    { "path": "packages/worker" }
+  ]
 }
