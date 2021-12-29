@@ -9,7 +9,7 @@
   "scripts": {
     "start": "npm run start:glitch",
     "start:glitch": "npm run redis-start && npm run build && npm start --workspaces --if-present",
-    "build": "tsc -b . -v",
+    "build": "tsc -b . -v && npm run build --workspaces --if-present",
     "dev": "npm run dev --workspaces --if-present",
     "clean": "npm run clean --workspaces --if-present",
     "redis-start": "/app/bin/redis-server /app/redis.conf"
