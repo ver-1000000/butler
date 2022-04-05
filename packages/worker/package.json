@@ -1,6 +1,6 @@
 {
   "name": "@butler/worker",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "license": "MIT",
   "private": true,
   "main": "src/index.js",
@@ -9,8 +9,7 @@
     "dist"
   ],
   "scripts": {
-    "start": "npm run serve",
-    "serve": "NODE_PATH=dist node dist",
+    "start": "NODE_ENV=production node ./dist/index.js",
     "dev": "npx ts-node-dev -r tsconfig-paths/register src/index.ts",
     "clean": "rimraf dist *.tsbuildinfo"
   },

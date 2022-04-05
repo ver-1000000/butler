@@ -1,6 +1,8 @@
 # バトラー
-[Heroku](https://heroku.com)や[Glitch](https://glitch.com)上のnode.jsサーバーで動作させることを前提とした、
+Node.jsサーバーで動作させることを前提とした、
 TypeScript実装のDiscord Botです。
+
+HerokuやGCPにデプロイすると無料枠で動かせてイイカンジです
 
 - https://github.com/ver-1000000/butler.git
 
@@ -25,8 +27,6 @@ TypeScript実装のDiscord Botです。
 .
 ├── Procfile              # Herokuの起動スクリプトの情報を書くファイル
 ├── package.json
-├── redis.conf            # GlitchでRedisサーバーを立ち上げるときの設定
-├── setup-redis.sh        # GlitchでRedisサーバーをインストールするスクリプト
 ├── tsconfig.base.json    # モノリポのパッケージ達に継承されるベースのtsconfig.json
 ├── tsconfig.json         # referencesで関連のtsconfig.jsonをまとめる、ビルド用tsconfig.json
 ├── packages/             # モノリポのパッケージ郡が格納されるディレクトリ
@@ -34,10 +34,11 @@ TypeScript実装のDiscord Botです。
 │   │   ├── src/
 │   │   ├── package.json
 │   │   └── tsconfig.json
-│   └── worker/           # Discordのイベントを常時監視するワーカー関連の機能
-│       ├── src/
-│       ├── package.json
-│       └── tsconfig.json
+│   ├── worker/           # Discordのイベントを常時監視するワーカー関連の機能
+│   │   ├── src/
+│   │   ├── package.json
+│   │   └── tsconfig.json
+│   └── web/              # ブラウザからBOTを操作するUIを提供 (開発中)
 └── ... # 省略
 ```
 
@@ -52,38 +53,6 @@ TypeScript実装のDiscord Botです。
 2. プロジェクトのルートディレクトリにある`.env.sample`をコピーして`.env`を作成する
 3. `.env`ファイルを編集して環境変数を設定する
 4. `npm run dev`を行うと、開発用サーバーが立ち上がり、ファイルの変更検知込のビルド&サービングを行う
-
-## Glitchへのデプロイ
-### 前提
-- DiscordサーバーにBOTがログインしている状態にしておくこと
-- Glitchのアカウントを作成し、ログインしておくこと
-
-### 手順
-1. https://glitch.com/ のヘッダーにある `New Project` から `Import from GitHub` を選択して `https://github.com/ver-1000000/butler` を読み込む
-2. Glitchのエディター画面に飛ばされ、しばらくするとエディター画面が表示され操作が可能になる
-3. ファイルが編集できるようになるので、`.env`というファイルを編集して環境変数を設定する
-4. `Tools` > `Terminal` からターミナルに入り、プロジェクトを動かすためのコマンドを入力する
-   - `./setup-redis.sh` を実行してRedisサーバーをインストール(10-20分かかる)する
-5. 問題がなければ、更に10-20分経ることでGlitchのコンテナが再起動し、BOTが動作し始める
-
-### 注意
-無料プランのGlitch Projectは **5分間放置するとCold状態** になります。
-
-なので、外部から定期的にURLを叩いてCOLDにならないようにする必要があります。  
-[Google Apps Script](https://script.google.com/)の場合、以下のコードを `awake.gs` という名前で保存して、  
-`トリガー`メニューから**5分おきに`wakeGlitch`を実行する分ベースのタイマー**を作成します。
-
-```gs
-const GLITCH_URL = 'https://your-glitch-url.glitch.me'; // <- GlitchプロジェクトのエンドポイントURL(`Change URL`から見れる)に書き換える
-const wakeGlitch = () => {
-  const contentType        = 'application/json; charset=utf-8';
-  const method             = 'post';
-  const muteHttpExceptions = true;
-  const payload            = { type: 'wake' };
-  const params             = { contentType, method, muteHttpExceptions, payload };
-  UrlFetchApp.fetch(GLITCH_URL, params);
-};
-```
 
 ## Herokuへのデプロイ
 コードをクローンしていい感じにHerokuにあげると、あとはpushするたびにビルドが走ってBOTが動作し始めます。

@@ -1,4 +1,3 @@
-import { createServer, IncomingMessage, ServerResponse } from 'http';
 import { Client, ClientUser, Intents, TextChannel } from 'discord.js';
 
 import { DISCORD_TOKEN, NOTIFY_TEXT_CHANNEL_ID } from '@butler/core';
@@ -19,7 +18,6 @@ class App {
   /** アプリケーションクラスを起動する。 */
   run() {
     this.confirmToken();
-    this.launchWarmGlitch();
     this.client.on('ready', () => this.initializeBotStatus(this.client.user));
     this.client.on('error', e => this.error(e));
     this.client.login(DISCORD_TOKEN);
@@ -30,22 +28,6 @@ class App {
     if (DISCORD_TOKEN) { return; }
     console.log('DISCORD_TOKENが設定されていません。');
     process.exit(1);
-  }
-
-  /** Glitchのコールドスタート対策用のサービングを開始する。 */
-  private launchWarmGlitch() {
-    const whenPost = (req: IncomingMessage, res: ServerResponse) => {
-      const chunks: string[] = [];
-      req.on('data', chunk => chunks.push(chunk));
-      req.on('end', () => {
-        const data  = chunks.join();
-        console.log(`requested: ${data}`);
-        res.end();
-      });
-    };
-    createServer((req, res) => {
-      if (req.method == 'POST') { whenPost(req, res); }
-    }).listen(3000);
   }
 
   /** readyイベントにフックして、ボットのステータスなどを設定する。 */
