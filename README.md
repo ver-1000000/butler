@@ -25,20 +25,16 @@ HerokuやGCPにデプロイすると無料枠で動かせてイイカンジで�
 
 ```
 .
-├── Procfile              # Herokuの起動スクリプトの情報を書くファイル
 ├── package.json
 ├── tsconfig.base.json    # モノリポのパッケージ達に継承されるベースのtsconfig.json
 ├── tsconfig.json         # referencesで関連のtsconfig.jsonをまとめる、ビルド用tsconfig.json
 ├── packages/             # モノリポのパッケージ郡が格納されるディレクトリ
 │   ├── core/             # 共通で利用するライブラリや定数、機能など
-│   │   ├── src/
-│   │   ├── package.json
-│   │   └── tsconfig.json
+│   │   └── ... # 省略
 │   ├── worker/           # Discordのイベントを常時監視するワーカー関連の機能
-│   │   ├── src/
-│   │   ├── package.json
-│   │   └── tsconfig.json
-│   └── web/              # ブラウザからBOTを操作するUIを提供 (開発中)
+│   │   └── ... # 省略
+│   └── web/              # ブラウザからBOTを操作するための、Next.jsによるUIを提供 (開発中)
+│       └── ... # 省略
 └── ... # 省略
 ```
 
@@ -55,9 +51,20 @@ HerokuやGCPにデプロイすると無料枠で動かせてイイカンジで�
 4. `npm run dev`を行うと、開発用サーバーが立ち上がり、ファイルの変更検知込のビルド&サービングを行う
 
 ## Herokuへのデプロイ
-コードをクローンしていい感じにHerokuにあげると、あとはpushするたびにビルドが走ってBOTが動作し始めます。
+1. クローンしたリポジトリをHerokuに上げる
+2. Herokuの環境変数を設定する
+   - WAKEUP_URLにアプリのURLを設定するのを忘れないこと
+3. Heroku Redisアドオンを設定し、Redisサーバーの環境変数を確認する(他のRedisサーバーを使う人はよしなに)
+4. web dynoを再起動すると、`npm start` が実行され正常に動作をし始める
 
-Heroku Redisなどを利用して、REDIS_URLを設定するのも忘れないようにしてください。
+## GCE(Google Compute Engine)へのデプロイ
+1. VMインスタンスを作り、VPCネットワーク ファイアウォールルールで、ポート3000の上りパケットを許可する設定を追加する
+2. VMインスタンス内のnode.jsやGitなどの前提条件を整え、仮想環境でリポジトリをクローンする
+3. Redisをインストールしてsystemctlとかで有効化する
+4. 環境変数を整える
+5. `npm ci`して`npm run build`して`npm run start`するとwebサーバーとworkerサーバーが起動する
+   - `npm ci`にめちゃくちゃ時間(1時間弱くらいとか)がかかるかも？ node 16の問題らしいがworkspacesを利用したいので我慢
+   - 一応、メモリ1GBとかならサーバーにSwap領域を設定しておいたほうがいいかも
 
 ## 環境変数(.envファイル)の説明
 - `DISCORD_TOKEN`: Discord APIを利用するために必要なトークン
@@ -65,6 +72,7 @@ Heroku Redisなどを利用して、REDIS_URLを設定するのも忘れない�
 - `POMODORO_VOICE_CHANNEL_ID`: ポモドーロ機能で利用するボイスチャンネルのID
 - `REDIS_URL`: 利用するRedisサーバーのURI
 - `DETECT_STICKER_RATE`: チャットがstickerの正規表現にマッチした際の反応率を、0.0-1.0で記述(0は無効化、1.0のときは必ず反応)
+- `WAKEUP_URL`: Herokuのように、アクセスがないとsleepしてしまうPaaSなどに対して、定期的にGETリクエストを送るためのURL
 
 ## その他
 ### チャンネルのIDどうやって見るん？

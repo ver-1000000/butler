@@ -1,4 +1,5 @@
 import { Client, ClientUser, Intents, TextChannel } from 'discord.js';
+import fetch from 'node-fetch';
 
 import { DISCORD_TOKEN, NOTIFY_TEXT_CHANNEL_ID } from '@butler/core';
 import { MemosStore } from './stores/memos.store';
@@ -18,6 +19,7 @@ class App {
   /** アプリケーションクラスを起動する。 */
   run() {
     this.confirmToken();
+    this.wakeUpHost();
     this.client.on('ready', () => this.initializeBotStatus(this.client.user));
     this.client.on('error', e => this.error(e));
     this.client.login(DISCORD_TOKEN);
@@ -30,9 +32,17 @@ class App {
     process.exit(1);
   }
 
+  /** WAKEUP_URLが環境変数で設定されている場合、定期的にGETリクエストを送ることでホストのsleepを防ぐ。 */
+  private wakeUpHost() {
+    const url = process.env.WAKEUP_URL || '';
+    if (url === '') { return; }
+    const interval = 10 * Number(process.env.WAKEUP_INTERVAL || '60') * 1000; // default: 10min
+    setInterval(() => fetch(url), interval);
+  }
+
   /** readyイベントにフックして、ボットのステータスなどを設定する。 */
   private initializeBotStatus(user: ClientUser | null) {
-    console.log('ready...');
+    console.log(`ready - started worker server`);
     user?.setPresence({ activities: [{ name: 'みんなの発言', type: 'WATCHING' }] });
   }
 

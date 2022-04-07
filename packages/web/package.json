@@ -2,12 +2,10 @@
   "name": "@butler/web",
   "private": true,
   "scripts": {
-    "dev": "tsc -p tsconfig.server.json && node ./dist/server/index.js",
-    "build": "npm run build:next && npm run build:server",
-    "start": "NODE_ENV=production node ./dist/server/index.js",
-    "lint": "next lint",
-    "build:next": "next build",
-    "build:server": "tsc -p tsconfig.server.json"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
     "express": "^4.17.2",

@@ -7,9 +7,13 @@
     "packages/*"
   ],
   "scripts": {
-    "start": "npm run build && nf start",
+    "dev": "run-p dev:*",
+    "dev:web": "npm run dev --prefix packages/web",
+    "dev:worker": "npm run dev --prefix packages/worker",
+    "start": "run-p start:*",
+    "start:web": "npm start --prefix packages/web",
+    "start:worker": "npm start --prefix packages/worker",
     "build": "tsc -b . -v && npm run build --workspaces --if-present",
-    "dev": "npm run dev --workspaces --if-present",
     "clean": "npm run clean --workspaces --if-present"
   },
   "repository": {
@@ -38,6 +42,6 @@
     "heroku"
   ],
   "dependencies": {
-    "foreman": "^3.0.1"
+    "npm-run-all": "^4.1.5"
   }
 }
